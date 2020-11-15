@@ -39,6 +39,18 @@ public class GradeController {
         return "redirect:/student/" + studentId;
     }
     //############## DELETE ##############\\
+    @GetMapping("/{id}")
+    public String deleteGrade(@RequestParam("id") Long gradeId) {
+        Optional<Grade> gradeOptional = gradeService.findGradeById(gradeId);
+        if (gradeOptional.isPresent()) {
+            Grade g = gradeOptional.get();
+            gradeService.deleteById(gradeId);
+            return "redirect:/student/" + g.getStudent().getId();
+        }
+        return "redirect:/student";
+    }
     //############## GET ##############\\
+
+
     //############## LIST = STUDENT DETAILS = DONE ##############\\
 }
