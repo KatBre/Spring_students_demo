@@ -18,17 +18,20 @@ public class StudentController {
     // kontroler  zakaz bezpośredniego odwoływania się do bazy danych.
     private final StudentService studentService;
     private final Student defaultMaxStudent;
+
     @Autowired // @RequiredArgsConstructor
     public StudentController(StudentService studentService, Student defaultMaxStudent) {
         this.studentService = studentService;
         this.defaultMaxStudent = defaultMaxStudent;
     }
+
     // http://localhost:8080/student
     @GetMapping("")
     public String getStudents(Model model) {
         model.addAttribute("listOfStudents", studentService.findAll());
         return "student_list";
     }
+
     // ############ FORMULARZ
     @GetMapping("/form")
     public String getForm(Model model) { // ponieważ Student jest POJO, to stworzy to nową instancję i ją wstrzyknie
@@ -38,11 +41,13 @@ public class StudentController {
 //        model.addAttribute("addedStudent", new Student());
         return "student_form";
     }
+
     @PostMapping("")
     public String submitStudent(Student student) {
         studentService.save(student);
         return "redirect:/student";
     }
+
     // #######################################################################################
     // DO UZUPEŁNIENIA JUTRO / DLA CHĘNTYCH W DOMU (metoda delete i get by id - details)
     // http://localhost:8080/student/5
@@ -55,4 +60,22 @@ public class StudentController {
         }
         return "redirect:/student";
     }
+
+    // ############ USUWANIE
+    @GetMapping("/delete/{id}")
+    public String removeStudent(@PathVariable(name = "id") Long id) {
+        studentService.delete(id);
+        return "redirect:/student";
+    }
+    // ############ EDYCJA
+    @GetMapping("/edit/{id}")
+    public String editStudent(Model model, @PathVariable(name = "id") Long id) {
+        Optional<Student> studentOptional = studentService.find(id);
+        if (studentOptional.isPresent()) {
+            model.addAttribute("addedStudent", studentOptional.get());
+            return "student_form";
+        }
+        return "redirect:/student";
+    }
+
 }
